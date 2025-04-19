@@ -1,8 +1,7 @@
 """
-   table數據處理(另開程式碼小規模單頁測試)
-   流程確認 
+   table數據處理功能新增(擷取、併入dataframe、匯出csv)(另開程式碼小規模單頁測試)
+   流程確認
 """
-
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -44,12 +43,15 @@ class WebScrapper:
         """
         每頁處理數據流程
         """
-        s_soup = BeautifulSoup(self.getPageSource(), 'html.parser') # 獲取當前standrad頁面的HTML源碼
-        s_table = self.getTableData(e_soup) # 獲取standrad表格數據
-        self.findAndClickExpandButton() # 查找expand按鈕元素
-        e_soup = BeautifulSoup(self.getPageSource(), 'html.parser') # 獲取當前expand頁面的HTML源碼
-        e_table = self.getTableData(e_soup) # 獲取expand表格數據
-        self.findAndClickNextButton() # 查找下一頁按鈕元素
+        while self.__current_year <= self.__max_year:
+            s_soup = BeautifulSoup(self.getPageSource(), 'html.parser') # 獲取當前standrad頁面的HTML源碼
+            s_table = self.getTableData(e_soup) # 獲取standrad表格數據
+            self.goToExpandView() # 查找expand按鈕元素
+            e_soup = BeautifulSoup(self.getPageSource(), 'html.parser') # 獲取當前expand頁面的HTML源碼
+            e_table = self.getTableData(e_soup) # 獲取expand表格數據
+            self.goToNextPage() # 查找下一頁按鈕元素
+            
+        print("所有頁面數據處理完成")
         
     def cookieAccept(self):
         """
@@ -81,7 +83,7 @@ class WebScrapper:
             print("獲取當前頁面的HTML源碼成功")
         return __page_source
     
-    def findAndClickExpandButton(self):
+    def goToExpandView(self):
         """
         查找按鈕元素
         """
@@ -111,7 +113,7 @@ class WebScrapper:
             
             return None
     
-    def findAndClickNextButton(self):
+    def goToNextPage(self):
         """
         查找下一頁按鈕元素
         """
@@ -124,7 +126,7 @@ class WebScrapper:
         except: 
             self.__current_year += 1 # 更新年份
             self.url = "https://www.mlb.com/stats/pitching/" + str(self.__current_year) # 更新網址
-            self.turnToNextYear()
+            self.goToNextYear()
             
             print("未找到下一頁按鈕，將跳至下一年")
     
@@ -134,20 +136,20 @@ class WebScrapper:
         """
         self.driver.implicitly_wait(10)
         
-    def turnToNextYear(self):
+    def goToNextYear(self):
         """
         跳轉到下一年
         """
         if self.__current_year <= self.__max_year:
             self.driver.get("https://www.mlb.com/stats/pitching/" + str(self.__current_year))
             self.waitForPageLoad()
-            self.turnBackToStandradView()
+            self.goToStandradView()
             
             print("跳轉到下一年")
         else:
             print("已經超過最大年分，結束資料擷取")
     
-    def turnBackToStandradView(self):
+    def goToStandradView(self):
         """
         返回standrad view
         """
