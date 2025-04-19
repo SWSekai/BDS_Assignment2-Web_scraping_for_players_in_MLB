@@ -60,7 +60,7 @@ class WebScrapper:
             # 使用XPATH查找按鈕元素，根據按鈕的文本內容查找
             __expand_button = self.driver.find_element(By.XPATH, '/html/body/main/div[2]/section/section/div[1]/div[2]/div/div[1]/div/div[2]/button')
             self.driver.execute_script("arguments[0].click();", __expand_button)
-            print("找到按鈕，並點擊")
+            print("找到expand按鈕，並點擊")
         except:
             print("未找到按鈕")
     
@@ -105,5 +105,7 @@ if __name__ == "__main__":
     e_soup = BeautifulSoup(scraper.getPageSource(), 'html.parser') # 獲取當前頁面的HTML源碼
     
     scraper.findAndClickNextButton() # 查找下一頁按鈕元素
+    scraper.driver.implicitly_wait(10) # 等待按鈕點擊後頁面加載
+    time.sleep(5) # Optional，等待5秒以確保頁面加載完成
 
     scraper.driver.quit()
