@@ -85,6 +85,12 @@ class WebScrapper:
         except:
             print("未找到下一頁按鈕，將跳至下一年")
             self.url = "https://www.mlb.com/stats/pitching/" + str(self.__current_year) # 更新網址
+    
+    def waitForPageLoad(self):
+        """
+        等待頁面加載完成
+        """
+        self.driver.implicitly_wait(10)
 
 if __name__ == "__main__":
     url = "https://www.mlb.com/stats/pitching/2003"
@@ -99,13 +105,11 @@ if __name__ == "__main__":
     
     scraper.findAndClickExpandButton() # 查找按鈕元素
     
-    scraper.driver.implicitly_wait(10) # 等待按鈕點擊後頁面加載
-    time.sleep(5) # Optional，等待5秒以確保頁面加載完成
+    scraper.waitForPageLoad()
     
     e_soup = BeautifulSoup(scraper.getPageSource(), 'html.parser') # 獲取當前頁面的HTML源碼
     
     scraper.findAndClickNextButton() # 查找下一頁按鈕元素
-    scraper.driver.implicitly_wait(10) # 等待按鈕點擊後頁面加載
-    time.sleep(5) # Optional，等待5秒以確保頁面加載完成
+    scraper.waitForPageLoad()
 
     scraper.driver.quit()
